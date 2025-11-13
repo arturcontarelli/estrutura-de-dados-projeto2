@@ -57,6 +57,7 @@ void ImprimirVenda(Venda v);
 void auxPreOrder(NoArv *no);
 void auxInOrder(NoArv *no);
 void auxPosOrder(NoArv *no);
+void auxInOrderDecrescente(NoArv *no);
 
 // Funções auxiliares
 NoArv* auxBuscar(NoArv* no, int id);
@@ -126,6 +127,14 @@ void auxPosOrder(NoArv *no) {
     }
 }
 
+void auxInOrderDecrescente(NoArv *no) {
+    if (no != NULL) {
+        auxInOrderDecrescente(no->dir);
+        ImprimirVenda(no->venda);
+        auxInOrderDecrescente(no->esq);
+    }
+}
+
 // 6. IMPRIMIR ÁRVORE
 void ImprimirArvore(Arv *A, int procedimento){
     // CORREÇÃO: Verificar se árvore está vazia primeiro
@@ -136,19 +145,23 @@ void ImprimirArvore(Arv *A, int procedimento){
 
     switch(procedimento){
         case 1:
-            printf("Impressão Pré-Ordem:\n");
-            auxPreOrder(A->raiz);              // CORREÇÃO: Consistência com 'raiz'
+            printf("Impressão Pre-Ordem:\n");
+            auxPreOrder(A->raiz);              
             break;
         case 2:
             printf("Impressão Em Ordem (Crescente por ID):\n");
-            auxInOrder(A->raiz);               // CORREÇÃO: Consistência com 'raiz'
+            auxInOrder(A->raiz);               
             break;
         case 3:
-            printf("Impressão Pós-Ordem:\n");
-            auxPosOrder(A->raiz);              // CORREÇÃO: Consistência com 'raiz'
+            printf("Impressão Pos-Ordem:\n");
+            auxPosOrder(A->raiz);              
+            break;
+        case 4:
+            printf("Impressão Em Ordem Decrescente por ID:\n");
+            auxInOrderDecrescente(A->raiz);
             break;
         default:
-            printf("Procedimento inválido. Use: 1=Pré-ordem, 2=Em ordem, 3=Pós-ordem\n");
+            printf("Procedimento inválido. Use: 1=Pre-ordem, 2=Em ordem, 3=Pos-ordem\n");
             return;
     }
     printf("===========================\n\n");
