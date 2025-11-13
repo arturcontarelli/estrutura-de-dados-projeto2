@@ -4,24 +4,28 @@
 #include <time.h>
 #include "ABB.h"
 
-// === Protótipos de funções ===
+// === Protótipos de funções principais ===
+void InserirNovaVenda(Arv *arv);  
+void ListarVendas(Arv *arv);
+
+// === Protótipos de funções auxiliares ===
 int GerarID();
 int IDExiste(Arv *arv, int id);
 int GerarIDUnico(Arv *arv);
 int SelecionarImpressao();
-NoArv* InserirNovaVenda(Arv *arv, Venda venda);
-void ListarVendas(Arv *arv);
 
-// 1
-int ProcessarVendedorExistente(Arv *arv, char matricula[5], char nomeVendedor[51]);
-int ProcessarNovoVendedor(Arv *arv, char matricula[5], char nomeVendedor[51]);
-void ColetarDadosVenda(Venda *novaVenda, int opcaoVendedor);
-void ExibirResultadoInsercao(Venda novaVenda, int sucesso);
-void BuscarDadosVendedorPorMatricula(Arv *arv, char matricula[5], char nomeEncontrado[51]);
-void auxBuscarDadosVendedor(NoArv* no, char matricula[5], char nomeEncontrado[51], int* encontrou);
-void auxVerificarMatricula(NoArv* no, char matricula[5], int* existe);
+// Protótipos para matrícula
 void GerarMatricula(char matricula[5]);
 void GerarMatriculaUnica(Arv *arv, char matricula[5]);
+int MatriculaExiste(Arv *arv, char matricula[5]);
+void auxVerificarMatricula(NoArv* no, char matricula[5], int* existe);
+
+// Protótipos para vendedores
+int ProcessarVendedorExistente(Arv *arv, char matricula[5], char nomeVendedor[51]);
+int ProcessarNovoVendedor(Arv *arv, char matricula[5], char nomeVendedor[51]);
+Venda CriarVenda(char matricula[5], char nomeVendedor[51], Arv *arv);  // ✅ Adicionado
+void BuscarDadosVendedorPorMatricula(Arv *arv, char matricula[5], char nomeEncontrado[51]);
+void auxBuscarDadosVendedor(NoArv* no, char matricula[5], char nomeEncontrado[51], int* encontrou);
 
 
 // === Função main ===
@@ -154,54 +158,38 @@ int SelecionarImpressao(){
 // === Funcionalidades do sistema ===
  
 // 1. Inserir nova venda na árvore
-
 void InserirNovaVenda(Arv *arv) {
-    Venda novaVenda;
     char matricula[5];
     char nomeVendedor[51];
     int opcaoVendedor;
-    int vendedorValido = 0;
     
     printf("\n=== INSERIR NOVA VENDA ===\n");
-    printf("1 - Vendedor existente (informar matrícula)\n");
-    printf("2 - Novo vendedor (gerar nova matrícula)\n");
-    printf("Escolha uma opção: ");
+    printf("1 - Vendedor existente | 2 - Novo vendedor\n");
+    printf("Escolha: ");
     scanf("%d", &opcaoVendedor);
     
-    switch(opcaoVendedor) {
-        case 1:
-            vendedorValido = ProcessarVendedorExistente(arv, matricula, nomeVendedor);
-            break;
-            
-        case 2:
-            vendedorValido = ProcessarNovoVendedor(arv, matricula, nomeVendedor);
-            break;
-            
-        default:
-            printf("ERRO: Opção inválida!\n");
-            return;
-    }
+    // Processar vendedor
+    int vendedorOK = (opcaoVendedor == 1) ? 
+        ProcessarVendedorExistente(arv, matricula, nomeVendedor) :
+        ProcessarNovoVendedor(arv, matricula, nomeVendedor);
     
-    // Verificar se vendedor foi processado com sucesso
-    if (!vendedorValido) {
-        printf("Operação cancelada - problema com dados do vendedor.\n");
+    if (!vendedorOK) {
+        printf("Operação cancelada.\n");
         return;
     }
     
-    // Coletar dados da venda
-    ColetarDadosVenda(&novaVenda, opcaoVendedor);
+    // Criar e inserir venda
+    Venda novaVenda = CriarVenda(matricula, nomeVendedor, arv);
     
-    // Preencher dados do vendedor na venda
-    novaVenda.id = GerarIDUnico(arv);
-    strcpy(novaVenda.vendedor, nomeVendedor);
-    strcpy(novaVenda.matricula, matricula);
-    
-    // Inserir na árvore e exibir resultado
-    int sucesso = InserirVenda(arv, novaVenda);
-    ExibirResultadoInsercao(novaVenda, sucesso);
+    if (InserirVenda(arv, novaVenda)) {
+        printf("\nVENDA INSERIDA COM SUCESSO!\n");
+        ImprimirVenda(novaVenda);
+    } else {
+        printf("\nERRO: Falha ao inserir venda!\n");
+    }
 }
 
-//1.1 Auxiliar - Processar vendedor existente
+// 1.1 Auxiliar - Processar vendedor existente
 int ProcessarVendedorExistente(Arv *arv, char matricula[5], char nomeVendedor[51]) {
     int confirma;
     char nomeExistente[51];
@@ -219,7 +207,7 @@ int ProcessarVendedorExistente(Arv *arv, char matricula[5], char nomeVendedor[51
     // Buscar dados do vendedor
     BuscarDadosVendedorPorMatricula(arv, matricula, nomeExistente);
     
-    printf("📋 Vendedor encontrado: %s\n", nomeExistente);
+    printf("Vendedor encontrado: %s\n", nomeExistente);
     printf("Confirma este vendedor?\n");
     printf("1 - Sim, continuar\n");
     printf("2 - Não, cancelar\n");
@@ -229,22 +217,20 @@ int ProcessarVendedorExistente(Arv *arv, char matricula[5], char nomeVendedor[51
     switch(confirma) {
         case 1:
             strcpy(nomeVendedor, nomeExistente);
-            printf("✅ Vendedor confirmado: %s (%s)\n", nomeVendedor, matricula);
+            printf("Vendedor confirmado: %s (%s)\n", nomeVendedor, matricula);
             return 1;
             
         case 2:
-            printf("❌ Operação cancelada pelo usuário.\n");
+            printf("Operação cancelada pelo usuário.\n");
             return 0;
             
         default:
-            printf("❌ Opção inválida. Operação cancelada.\n");
+            printf("Opção inválida. Operação cancelada.\n");
             return 0;
     }
 }
 
-
-
-//1.2 Auxiliar - Processar novo vendedor
+// 1.2 Auxiliar - Processar novo vendedor
 int ProcessarNovoVendedor(Arv *arv, char matricula[5], char nomeVendedor[51]) {
     printf("Digite o nome do novo vendedor: ");
     getchar(); // Limpar buffer
@@ -264,59 +250,48 @@ int ProcessarNovoVendedor(Arv *arv, char matricula[5], char nomeVendedor[51]) {
         tentativas++;
         
         if (tentativas > 10) {
-            printf("❌ ERRO: Falha ao gerar matrícula após várias tentativas.\n");
+            printf("ERRO: Falha ao gerar matrícula após várias tentativas.\n");
             return 0;
         }
     } while (strcmp(matricula, "ERRO") == 0);
     
-    printf("✅ Novo vendedor cadastrado!\n");
-    printf("📋 Nome: %s\n", nomeVendedor);
-    printf("🏷️  Matrícula: %s\n", matricula);
+    printf("Novo vendedor cadastrado!\n");
+    printf("Nome: %s\n", nomeVendedor);
+    printf("Matrícula: %s\n", matricula);
     
     return 1;
 }
 
-// 1.3 Auxiliar - Coletar dados da venda
-void ColetarDadosVenda(Venda *novaVenda, int opcaoVendedor) {
-
-     switch(opcaoVendedor) {
-        case 1:
-            getchar(); // Vendedor existente precisa limpar buffer
-            break;
-        case 2:
-            // Vendedor novo já limpou o buffer no ProcessarNovoVendedor
-            break;
-    }
-
+Venda CriarVenda(char matricula[5], char nomeVendedor[51], Arv *arv) {
+    Venda novaVenda;
+    
+    // Gerar ID único
+    novaVenda.id = GerarIDUnico(arv);
+    
+    // Copiar dados do vendedor
+    strcpy(novaVenda.vendedor, nomeVendedor);
+    strcpy(novaVenda.matricula, matricula);
+    
+    // Coletar dados do cliente
     printf("\n--- DADOS DA VENDA ---\n");
-
     printf("Nome do cliente: ");
-    fgets(novaVenda->cliente, 51, stdin);
-    novaVenda->cliente[strcspn(novaVenda->cliente, "\n")] = 0;
+    getchar(); // Limpar buffer
+    fgets(novaVenda.cliente, 51, stdin);
+    novaVenda.cliente[strcspn(novaVenda.cliente, "\n")] = 0;  
     
+    // Coletar data
     printf("Data da transação (DD MM AAAA): ");
-    scanf("%d %d %d", &novaVenda->dataTransacao.dia, 
-          &novaVenda->dataTransacao.mes, &novaVenda->dataTransacao.ano);
+    scanf("%d %d %d", &novaVenda.dataTransacao.dia, 
+          &novaVenda.dataTransacao.mes, &novaVenda.dataTransacao.ano);
     
+    // Coletar valor
     printf("Valor da transação: R$ ");
-    scanf("%f", &novaVenda->valorTransacao);
+    scanf("%f", &novaVenda.valorTransacao);
+    
+    return novaVenda;
 }
 
-// 1.4 Auxiliar - Exibir resultado da inserção
-void ExibirResultadoInsercao(Venda novaVenda, int sucesso) {
-    if (sucesso) {
-        printf("✅ Venda inserida com sucesso na árvore!\n");
-        ImprimirVenda(novaVenda);
-    } else {
-        printf("\n❌ ERRO: Falha ao inserir venda na árvore!\n");
-        printf("💡 Possíveis causas:\n");
-        printf("   - ID já existe (muito improvável)\n");
-        printf("   - Problema de memória\n");
-        printf("   - Árvore não inicializada\n");
-    }
-}
-
-// 1.5 Buscar dados do vendedor por matrícula
+// 1.3 Buscar dados do vendedor por matrícula
 void BuscarDadosVendedorPorMatricula(Arv *arv, char matricula[5], char nomeEncontrado[51]) {
     strcpy(nomeEncontrado, ""); // Inicializar vazio
     
@@ -329,7 +304,6 @@ void BuscarDadosVendedorPorMatricula(Arv *arv, char matricula[5], char nomeEncon
 // Auxiliar recursivo para buscar dados do vendedor
 void auxBuscarDadosVendedor(NoArv* no, char matricula[5], char nomeEncontrado[51], int* encontrou) {
     if (no != NULL && !(*encontrou)) {
-        
         if (strcmp(no->venda.matricula, matricula) == 0) {
             strcpy(nomeEncontrado, no->venda.vendedor);
             *encontrou = 1;
