@@ -11,8 +11,6 @@ int GerarIDUnico(Arv *arv);
 int SelecionarImpressao();
 NoArv* InserirNovaVenda(Arv *arv, Venda venda);
 void ListarVendas(Arv *arv);
-void GerarMatriculaVendedor(char* matricula);
-
 
 
 // === Função main ===
@@ -69,12 +67,7 @@ int SelecionarImpressao(){
 }
 
 // == Gerar matrícula de vendedor no formato V + 3 dígitos ==
-void GerarMatriculaVendedor(char* matricula){
-    srand((unsigned int)time(NULL));
-    int numero = rand() % 1000; // Gera número entre 0 e 999
-    // Cada vendedor terá matrícula única no sistema, porem pode ter diferente número de ID de vendas
-    sprintf(matricula, "V%03d", numero); // Formata como V + 3 dígitos
-}
+
 
 // === Funcionalidades do sistema ===
  

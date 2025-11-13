@@ -21,6 +21,11 @@ typedef struct Data {
     int ano;
 } Data;
 
+typedef struct Vendedor {
+    char nome[51];            // Nome do vendedor
+    char matricula[5];        // Matrícula (V + 3 dígitos)
+} Vendedor;
+
 typedef struct Venda {
     int id;                    // Chave primária (1000-9999)
     char cliente[51];          // Nome do cliente
@@ -53,7 +58,8 @@ void LiberarArvore(Arv *A);
 
 // Funções de impressão
 void ImprimirArvore(Arv *A, int procedimento);
-void ImprimirVenda(Venda v);                    
+void ImprimirVenda(Venda v);     
+void imprimirVendaDeVendedor(Venda v);               
 void auxPreOrder(NoArv *no);
 void auxInOrder(NoArv *no);
 void auxPosOrder(NoArv *no);
@@ -93,12 +99,17 @@ NoArv* CriaNo(Venda v) {
     return novo;
 }
 
-// 4. IMPRIMIR VENDA
+// 4.1 IMPRIMIR VENDA
 void ImprimirVenda(Venda v) {                  
-    printf("ID: %d | Cliente: %s | Vendedor: %s | Matrícula: %s\n", 
-           v.id, v.cliente, v.vendedor, v.matricula);
-    printf("Data: %02d/%02d/%04d | Valor: R$ %.2f\n", 
-           v.dataTransacao.dia, v.dataTransacao.mes, v.dataTransacao.ano, v.valorTransacao);
+    printf("ID: %d | Vendedor: %s | Matrícula: %s | Cliente: %s | Data: %02d/%02d/%04d | Valor: R$ %.2f\n", 
+           v.id, v.vendedor, v.matricula, v.cliente, v.dataTransacao.dia, v.dataTransacao.mes, v.dataTransacao.ano, v.valorTransacao);
+    printf("----------------------------------------\n");
+}
+
+// 4.2 IMPRIMIR VENDA DE DETERMINADO VENDEDOR
+void imprimirVendaDeVendedor(Venda v) {
+    printf("ID: %d | Cliente: %s | Data: %02d/%02d/%04d | Valor: R$ %.2f\n", 
+           v.id, v.cliente, v.dataTransacao.dia, v.dataTransacao.mes, v.dataTransacao.ano,  v.valorTransacao);
     printf("----------------------------------------\n");
 }
 
