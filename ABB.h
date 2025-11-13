@@ -289,4 +289,42 @@ void auxLiberar(NoArv* no) {
     }
 }
 
+int qntVendas(NoArv* pai) {
+    // qnd acabar retorna 0 q n tem mais nó
+    if (pai == NULL)
+        return 0;
+
+    // conta o nó atual (1) + nós da esquerda + nós da direita
+    return 1 + qntVendas(pai->esq) + qntVendas(pai->dir);
+}
+
+
+float somaVendas (NoArv* pai) {
+    // vai somando os valores de transação
+    float S = pai->venda.valorTransacao;
+    if (pai->dir != NULL) {
+        S += somaVendas(pai->dir);
+    }
+    if (pai->esq != NULL) {
+        S += somaVendas(pai->esq);
+    }
+    return S; // retorna valor total
+}
+
+int buscarVendas(NoArv* pai, char *vendedor) {
+    if (pai == NULL)
+        return 0;
+
+    int qnt = 0;
+
+    // compara nomes de vendedor
+    if (strcmp(pai->venda.vendedor, vendedor) == 0) { qnt++; }
+
+    // soma os resultados das subárvores
+    qnt += buscarVendas(pai->esq, vendedor);
+    qnt += buscarVendas(pai->dir, vendedor);
+
+    return qnt;
+}
+
 #endif // ARVORE_H_INCLUDED

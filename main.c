@@ -93,6 +93,7 @@ NoArv* InserirNovaVenda(Arv *arv, Venda venda){
 
 // 2. Listar todas as vendas (crescete ou decrescente)
 // no formato ID | Vendedor | Matrícula |Cliente | Data de Transação| Valor(R$)
+// O usuário tem a opção de obter a listagem em ordem crescente ou decrescente de ID.
 
 void ListarVendas(Arv *arv){
     int ordem = SelecionarImpressao();
@@ -108,4 +109,39 @@ void ListarVendas(Arv *arv){
             break;
     }
 }
+
+// 5. Função de exibir estatisticas:
+// Exibe o número total de vendas, a soma total do faturamento
+// Add a mais: número de vendas por vendedor 
+
+#include <stdio.h>
+#include <string.h>
+
+void estatisticas(Arv *arv) {
+    int qnt = qntVendas(arv->raiz);
+    float somaFaturamento = somaVendas(arv->raiz);
+    char resposta;
+
+    printf("Estatísticas:\n");
+    printf("Quantidade Total de Vendas: %d\n", qnt);
+    printf("Soma Total das Vendas: %.2f\n", somaFaturamento);
+
+    printf("Deseja verificar o número de vendas de um vendedor (s/n)? ");
+    scanf(" %c", &resposta); // espaço antes de %c para ignorar \n pendente
+
+    if (resposta == 'S' || resposta == 's') {
+        char vendedor[51];
+
+        printf("\nDigite o nome do vendedor: ");
+        getchar(); // limpa o \n deixado no buffer (por segurança)
+        fgets(vendedor, sizeof(vendedor), stdin);
+        vendedor[strcspn(vendedor, "\n")] = '\0'; // remove o \n do final
+
+        int vendasVendedor = buscarVendas(arv->raiz, vendedor);
+        printf("\nO vendedor %s realizou %d venda(s).\n", vendedor, vendasVendedor);
+    }
+
+    // se não digitar 's', apenas encerra
+}
+
 
