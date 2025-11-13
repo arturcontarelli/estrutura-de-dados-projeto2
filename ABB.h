@@ -97,7 +97,7 @@ NoArv* CriaNo(Venda v) {
 
 // 4.1 IMPRIMIR VENDA
 void ImprimirVenda(Venda v) {                  
-    printf("ID: %d | Vendedor: %s | Matrícula: %s | Cliente: %s | Data: %02d/%02d/%04d | Valor: R$ %.2f\n", 
+    printf("ID: %-5d | Vendedor: %-20s | Matrícula: %s | Cliente: %s | Data: %02d/%02d/%04d | Valor: R$ %.2f\n", 
            v.id, v.vendedor, v.matricula, v.cliente, v.dataTransacao.dia, v.dataTransacao.mes, v.dataTransacao.ano, v.valorTransacao);
     printf("----------------------------------------\n");
 }

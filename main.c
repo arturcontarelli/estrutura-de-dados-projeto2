@@ -29,11 +29,74 @@ void auxBuscarDadosVendedor(NoArv* no, char matricula[5], char nomeEncontrado[51
 
 
 // === Função main ===
-int main (){
+int main() {
 
+    menu();
+
+    return 0;
 }
 
+// === Função para chamar o menu ===
+
+void menu() {
+    int opcao;
+
+    do {
+        printf("\n=============================================\n");
+        printf("                    MENU\n");
+        printf("=============================================\n");
+        printf("1. Inserir nova venda\n");
+        printf("2. Listar todas as vendas (crescente/decrescente)\n");
+        printf("3. Buscar vendas de um vendedor\n");
+        printf("4. Listar vendas acima ou abaixo de um valor\n");
+        printf("5. Exibir estatísticas\n");
+        printf("6. Remover uma venda\n");
+        printf("7. Finalizar sistema\n");
+        printf("=============================================\n");
+        printf("Selecione uma opcao: ");
+        scanf("%d", &opcao);
+
+        switch (opcao) {
+            case 1:
+                inserirVenda();
+                break;
+
+            case 2:
+                listarVendas();
+                break;
+
+            case 3:
+                buscarVendedor();
+                break;
+
+            case 4:
+                listarVendaPorValor();
+                break;
+
+            case 5:
+                exibirEstatisticas();
+                break;
+
+            case 6:
+                removerVenda();
+                break;
+
+            case 7:
+            //Todo: dar free nas arvores 
+                printf("\nFinalizando o sistema...\n");
+                break;
+
+            default:
+                printf("\nOpcao invalida! Tente novamente.\n");
+        }
+
+    } while (opcao != 7);
+}
+
+
 // === Funções Auxiliares ===
+
+
 
 // == gerar ID aleatório ==
 
@@ -335,5 +398,28 @@ void ListarVendas(Arv *arv){
     }
 }
 
+void inserirVenda() {
+    printf("\n[inserirVenda] Ainda nao implementada.\n");
+}
+
+void listarVendas() {
+    printf("\n[listarVendas] Ainda nao implementada.\n");
+}
+
+void buscarVendedor() {
+    printf("\n[buscarVendedor] Ainda nao implementada.\n");
+}
+
+void listarVendaPorValor() {
+    printf("\n[listarVendaPorValor] Ainda nao implementada.\n");
+}
+
+void exibirEstatisticas() {
+    printf("\n[exibirEstatisticas] Ainda nao implementada.\n");
+}
+
+void removerVenda() {
+    printf("\n[removerVenda] Ainda nao implementada.\n");
+}
 
 
