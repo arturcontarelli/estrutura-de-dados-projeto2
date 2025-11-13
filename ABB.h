@@ -21,6 +21,7 @@ typedef struct Data {
     int ano;
 } Data;
 
+
 typedef struct Venda {
     int id;                    // Chave primária (1000-9999)
     char cliente[51];          // Nome do cliente
@@ -103,7 +104,7 @@ void ImprimirVenda(Venda v) {
 
 // 4.2 IMPRIMIR VENDA DE DETERMINADO VENDEDOR
 void imprimirVendaDeVendedor(Venda v) {
-    printf("ID: %d | Cliente: %s | Data: %02d/%02d/%04d | Valor: R$ %.2f\n", 
+    printf("ID: %-5d | Cliente: %-20s | Data: %02d/%02d/%04d | Valor: R$ %.2f\n", 
            v.id, v.cliente, v.dataTransacao.dia, v.dataTransacao.mes, v.dataTransacao.ano,  v.valorTransacao);
     printf("----------------------------------------\n");
 }
