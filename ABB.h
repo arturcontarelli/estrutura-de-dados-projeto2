@@ -21,11 +21,6 @@ typedef struct Data {
     int ano;
 } Data;
 
-typedef struct Vendedor {
-    char nome[51];            // Nome do vendedor
-    char matricula[5];        // Matrícula (V + 3 dígitos)
-} Vendedor;
-
 typedef struct Venda {
     int id;                    // Chave primária (1000-9999)
     char cliente[51];          // Nome do cliente
