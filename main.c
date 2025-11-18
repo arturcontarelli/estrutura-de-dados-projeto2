@@ -129,7 +129,7 @@ int GerarIDUnico(Arv *arv){
 
 // == Gerar matrícula de vendedor no formato V + 3 dígitos ==
 void GerarMatricula(char matricula[5]) {
-    static int inicializado = 0;
+    int inicializado = 0;
 
     // Inicializar srand apenas uma vez
     if (!inicializado) {
@@ -442,11 +442,11 @@ void auxPrintVendasMaior(NoArv *no, float valorBusca){
 
 void auxPrintVendasMenor(NoArv *no, float valorBusca){
     if(no != NULL){
-        auxPrintVendasMaior(no -> dir, valorBusca);
+        auxPrintVendasMenor(no -> dir, valorBusca);
         if(no -> venda.valorTransacao < valorBusca){
             ImprimirVenda(no ->venda);
         }
-        auxPrintVendasMaior(no -> esq, valorBusca);
+        auxPrintVendasMenor(no -> esq, valorBusca);
     }
 }
 
