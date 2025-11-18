@@ -282,7 +282,7 @@ NoArv* auxRemover(NoArv* no, int id, int* removido) { //obs remove apenas o id
         // Caso 2: Nó com dois filhos
         NoArv* temp = EncontrarMaximo(no->esq); //maior valor da subárvore esquerda
         no->venda = temp->venda;
-        no->dir = auxRemover(no->esq, temp->venda.id, removido);
+        no->esq = auxRemover(no->esq, temp->venda.id, removido);
     }
     
     return no;
