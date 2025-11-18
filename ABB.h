@@ -66,6 +66,7 @@ NoArv* auxBuscar(NoArv* no, int id);
 NoArv* auxInserir(NoArv* no, Venda v, int* sucesso);
 NoArv* auxRemover(NoArv* no, int id, int* removido);
 NoArv* EncontrarMinimo(NoArv* no);
+NoArv* EncontrarMaximo(NoArv* no);
 void auxLiberar(NoArv* no);
 
 // ========== IMPLEMENTAÇÕES ==========
@@ -237,17 +238,25 @@ int RemoverVenda(Arv *A, int id) {
 }
 
 // Auxiliar - Encontrar mínimo
-NoArv* EncontrarMinimo(NoArv* no) {            
-    while (no && no->esq != NULL) {
-        no = no->esq;
+// NoArv* EncontrarMinimo(NoArv* no) {            
+//     while (no && no->esq != NULL) {
+//         no = no->esq;
+//     }
+//     return no;
+// }
+
+NoArv* EncontrarMaximo(NoArv* no) {
+    while (no->dir != NULL) {
+        no = no->dir;
     }
     return no;
 }
 
+
 // Auxiliar - Remoção recursiva
-NoArv* auxRemover(NoArv* no, int id, int* removido) {
+NoArv* auxRemover(NoArv* no, int id, int* removido) { //obs remove apenas o id 
     if (no == NULL) {
-        *removido = 0;
+        *removido = 0; //caso arvore vazia
         return no;
     }
     
@@ -271,14 +280,13 @@ NoArv* auxRemover(NoArv* no, int id, int* removido) {
         }
         
         // Caso 2: Nó com dois filhos
-        NoArv* temp = EncontrarMinimo(no->dir);
+        NoArv* temp = EncontrarMaximo(no->esq); //maior valor da subárvore esquerda
         no->venda = temp->venda;
-        no->dir = auxRemover(no->dir, temp->venda.id, removido);
+        no->dir = auxRemover(no->esq, temp->venda.id, removido);
     }
     
     return no;
 }
-
 // 10. LIBERAR ÁRVORE
 void LiberarArvore(Arv *A) {
     if (A != NULL) {
