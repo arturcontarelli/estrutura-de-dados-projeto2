@@ -431,23 +431,19 @@ void listarVendaPorValor(Arv *A, float valorBusca, int maiorMenor) {
 }
 
 void auxPrintVendasMaior(NoArv *no, float valorBusca){
-    if(no != NULL){
-        auxPrintVendasMaior(no -> dir, valorBusca);
-        if(no -> venda.valorTransacao > valorBusca){
-            ImprimirVenda(no ->venda);
-        }
-        auxPrintVendasMaior(no -> esq, valorBusca);
+    if(no ->dir != NULL)auxPrintVendasMaior(no -> dir, valorBusca);
+    if(no -> venda.valorTransacao > valorBusca){
+        ImprimirVenda(no ->venda);
     }
+    if(no ->esq != NULL) auxPrintVendasMaior(no -> esq, valorBusca);
 }
 
 void auxPrintVendasMenor(NoArv *no, float valorBusca){
-    if(no != NULL){
-        auxPrintVendasMenor(no -> dir, valorBusca);
-        if(no -> venda.valorTransacao < valorBusca){
-            ImprimirVenda(no ->venda);
-        }
-        auxPrintVendasMenor(no -> esq, valorBusca);
+    if(no ->dir != NULL)auxPrintVendasMenor(no -> dir, valorBusca);
+    if(no -> venda.valorTransacao > valorBusca){
+        ImprimirVenda(no ->venda);
     }
+    if(no ->esq != NULL) auxPrintVendasMenor(no -> esq, valorBusca);
 }
 
 void exibirEstatisticas() {
