@@ -5,19 +5,21 @@
 #include "ABB.h"
 
 // === Protótipos de funções principais ===
+void menu();
 void InserirNovaVenda(Arv *arv);  
 void ListarVendas(Arv *arv);
-void BuscarVendedor();
+void BuscarVendedor(Arv *arv);
 void ListarVendaPorValor(Arv *A, float valorBusca, int maiorMenor);
 void ExibirEstatisticas(Arv *arv);
-void RemoverVenda();
+//void RemoverVenda(Arv *arv); nome conflituoso com ABB
 
 // === Protótipos de funções auxiliares ===
 int GerarID();
 int IDExiste(Arv *arv, int id);
 int GerarIDUnico(Arv *arv);
 int SelecionarImpressao();
-
+void auxPrintVendasMaior(NoArv *no, float valorBusca);
+void auxPrintVendasMenor(NoArv *no, float valorBusca);
 // Protótipos para matrícula
 void GerarMatricula(char matricula[5]);
 void GerarMatriculaUnica(Arv *arv, char matricula[5]);
@@ -44,6 +46,7 @@ int main() {
 // === Função para chamar o menu ===
 
 void menu() {
+       
     Arv* arvore = CriaArvore(); // Criar árvore principal
     int opcao;
     int entradaValida;
@@ -52,24 +55,21 @@ void menu() {
         printf("ERRO: Falha ao inicializar o sistema!\n");
         return;
     }
-
-    printf("\n SISTEMA DE VENDAS INICIALIZADO COM SUCESSO!\n");
-
     do {
-        system("cls");   
-
-        printf("\n=============================================\n");
-        printf(" ||           SISTEMA DE VENDAS               || \n");
-        printf("  =============================================\n");
-        printf("\t > 1.  Inserir nova venda <\n");
-        printf("\t > 2.  Listar todas as vendas <\n");
-        printf("\t > 3.  Buscar vendas de um vendedor <\n");
-        printf("\t > 4.  Filtrar vendas por valor <\n");
-        printf("\t > 5.  Exibir estatísticas <\n");
-        printf("\t > 6.   Remover uma venda <\n");
-        printf("\t > 7.  Finalizar sistema <\n");
+    
+        system("cls");
+        printf("\n =============================================\n");
+        printf("||           SISTEMA DE VENDAS               || \n");
+        printf(" =============================================\n");
+        printf(" > 1.  Inserir nova venda \n");
+        printf(" > 2.  Listar todas as vendas \n");
+        printf(" > 3.  Buscar vendas de um vendedor \n");
+        printf(" > 4.  Filtrar vendas por valor \n");
+        printf(" > 5.  Exibir estatísticas \n");
+        printf(" > 6.   Remover uma venda \n");
+        printf(" > 7.  Finalizar sistema <\n");
         printf("=============================================\n");
-        printf("👉 Selecione uma opção (1-7): ");
+        printf("--- Selecione uma opção (1-7): ---\n");
 
         // Validação de entrada 
         entradaValida = scanf("%d", &opcao);
@@ -161,7 +161,7 @@ void menu() {
                     printf(" Nenhuma venda cadastrada para remover.\n");
                 } else {
                     printf(" Carregando remoção de venda...\n");
-                    RemoverVenda(arvore);
+                    //RemoverVenda(arvore);
                 }
                 break;
             }
@@ -243,10 +243,7 @@ int MatriculaExiste(Arv *arv, char matricula[5]) {
     if (VaziaArvore(arv)) {
         return 0; // Árvore vazia, matrícula não existe
     }
-    
-    int existe = 0;
-    auxVerificarMatricula(arv->raiz, matricula, &existe);
-    return existe;
+    return auxVerificarMatricula(arv->raiz, matricula);
 }
 
 // == Auxiliar recursivo para verificar matrícula ==
@@ -349,7 +346,7 @@ int ProcessarVendedorExistente(Arv *arv, char matricula[5], char nomeVendedor[51
     printf("Digite a matrícula do vendedor (formato V000): ");
     scanf("%s", matricula);
 
-     }while(matricula[0] != 'V');
+     }while(strlen(matricula) != 4 || matricula[0] != 'V');
     
     // Verificar se matrícula existe
     if (!MatriculaExiste(arv, matricula)) {
@@ -490,7 +487,7 @@ void ListarVendas(Arv *arv){
 }
 
 
-void BuscarVendedor() {
+void BuscarVendedor(Arv *arv) {
     printf("\n[buscarVendedor] Ainda nao implementada.\n");
 }
 
@@ -509,27 +506,30 @@ void ListarVendaPorValor(Arv *A, float valorBusca, int maiorMenor) {
 }
 // 4.1 Auxiliares para listar vendas por valor
 void auxPrintVendasMaior(NoArv *no, float valorBusca){
-    if(no ->dir != NULL)auxPrintVendasMaior(no -> dir, valorBusca);
-    if(no -> venda.valorTransacao > valorBusca){
-        ImprimirVenda(no ->venda);
+    if(no != NULL){ 
+        if(no ->dir != NULL)auxPrintVendasMaior(no -> dir, valorBusca);
+        if(no -> venda.valorTransacao > valorBusca){
+            ImprimirVenda(no ->venda);
+        }
+        if(no ->esq != NULL) auxPrintVendasMaior(no -> esq, valorBusca);
     }
-    if(no ->esq != NULL) auxPrintVendasMaior(no -> esq, valorBusca);
 }
 
 // 4.2 Auxiliares para listar vendas por valor
 void auxPrintVendasMenor(NoArv *no, float valorBusca){
-    if(no ->dir != NULL)auxPrintVendasMenor(no -> dir, valorBusca);
-    if(no -> venda.valorTransacao < valorBusca){
-        ImprimirVenda(no ->venda);
+    if(no != NULL){
+        if(no ->dir != NULL)auxPrintVendasMenor(no -> dir, valorBusca);
+        if(no -> venda.valorTransacao < valorBusca){
+            ImprimirVenda(no ->venda);
+        }
+        if(no ->esq != NULL) auxPrintVendasMenor(no -> esq, valorBusca);
     }
-    if(no ->esq != NULL) auxPrintVendasMenor(no -> esq, valorBusca);
 }
-
 
 // 5. Exibir estatísticas
 void ExibirEstatisticas(Arv *arv) {
-    int qnt = qntVendas(arv->raiz);
-    float somaFaturamento = somaVendas(arv->raiz);
+    int qnt = QuantidadeVendas(arv->raiz);
+    float somaFaturamento = SomaVendas(arv->raiz);
     char resposta;
 
     printf("Estatísticas:\n");
@@ -541,21 +541,55 @@ void ExibirEstatisticas(Arv *arv) {
 
     if (resposta == 'S' || resposta == 's') {
         char vendedor[51];
+        printf("\n Como deseja encotrar seu vendedor (1=Nome, 2=Matrícula): ");
+        int opcao;
+        scanf("%d", &opcao);
 
-        printf("\nDigite o nome do vendedor: ");
-        getchar(); // limpa o \n deixado no buffer (por segurança)
-        fgets(vendedor, sizeof(vendedor), stdin);
-        vendedor[strcspn(vendedor, "\n")] = '\0'; // remove o \n do final
+        switch(opcao) {
+            case 1:
+                printf("\nDigite o nome do vendedor: ");
+                getchar(); // limpa o \n deixado no buffer (por segurança)
+                fgets(vendedor, sizeof(vendedor), stdin);
+                vendedor[strcspn(vendedor, "\n")] = '\0'; // remove o \n do final
+                
+                if (strlen(vendedor) == 0) {
+                    printf("Nome do vendedor não pode estar vazio!\n");
+                    break;
+                }
+                int cont = BuscarVendasPorNome(arv->raiz, vendedor);
+                printf("Vendedor %s encontrado\n Vendas realizadas: %d\n", vendedor, cont);
+                break;
+            case 2: {
+                char matricula[5];
+                do {
+                printf("\nDigite a matrícula do vendedor (formato V000): ");
+                scanf("%s", matricula);
 
-        int vendasVendedor = buscarVendas(arv->raiz, vendedor);
-        printf("\nO vendedor %s realizou %d venda(s).\n", vendedor, vendasVendedor);
+                }while(strlen(matricula) != 4 || matricula[0] != 'V');
+                
+                // Buscar o nome do vendedor pela matrícula
+                
+                if (strlen(vendedor) == 0) {
+                    printf("Matrícula %s não encontrada!\n", matricula);
+                    break;
+                }
+                int cont = BuscarVendasPorMatricula(arv->raiz, matricula);
+                printf("Matricula encontrada: %s\n Vendas realizadas: %d\n", matricula, cont);
+                
+                break;
+            }
+            default:
+                printf("Opção inválida!\n");
+                return;
+        }
+
     }
 
     // se não digitar 's', apenas encerra
 }
 
-void RemoverVenda() {
-    printf("\n[removerVenda] Ainda nao implementada.\n");
-}
+// void RemoverVenda(Arv *arv) { // nome conflituoso com ABB
+//     printf("\n[removerVenda] Ainda nao implementada.\n");
+// }
 
 

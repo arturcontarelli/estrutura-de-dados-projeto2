@@ -68,6 +68,10 @@ NoArv* auxRemover(NoArv* no, int id, int* removido);
 NoArv* EncontrarMinimo(NoArv* no);
 NoArv* EncontrarMaximo(NoArv* no);
 void auxLiberar(NoArv* no);
+int QuantidadeVendas(NoArv* pai);
+float SomaVendas (NoArv* pai);
+int BuscarVendasPorNome(NoArv* no, char vendedor[51]);
+int BuscarVendasPorMatricula(NoArv* no, char matricula[5]);
 
 // ========== IMPLEMENTAÇÕES ==========
 
@@ -196,6 +200,23 @@ NoArv* auxBuscar(NoArv* no, int id) {
     }
 }
 
+// buscar venda por nome ou matricula
+int BuscarVendasPorNome(NoArv* no, char vendedor[51]) {
+    if (no == NULL) return 0;
+    
+    int count = (strcmp(no->venda.vendedor, vendedor) == 0) ? 1 : 0;
+    return count + BuscarVendasPorNome(no->esq, vendedor) + 
+                   BuscarVendasPorNome(no->dir, vendedor);
+}
+
+int BuscarVendasPorMatricula(NoArv* no, char matricula[5]) {
+    if (no == NULL) return 0;
+    
+    int count = (strcmp(no->venda.matricula, matricula) == 0) ? 1 : 0;
+    return count + BuscarVendasPorMatricula(no->esq, matricula) + 
+                   BuscarVendasPorMatricula(no->dir, matricula);
+}
+
 // 8. INSERIR
 int InserirVenda(Arv *A, Venda venda) {       
     if (A == NULL) {
@@ -303,5 +324,28 @@ void auxLiberar(NoArv* no) {
         free(no);
     }
 }
+
+int QuantidadeVendas(NoArv* pai) {
+    // qnd acabar retorna 0 q n tem mais nó
+    if (pai == NULL)
+        return 0;
+
+    // conta o nó atual (1) + nós da esquerda + nós da direita
+    return 1 + QuantidadeVendas(pai->esq) + QuantidadeVendas(pai->dir);
+}
+
+float SomaVendas (NoArv* pai) {
+    if(pai == NULL) return 0.0;
+    // vai somando os valores de transação
+    float S = pai->venda.valorTransacao;
+    if (pai->dir != NULL) {
+        S += SomaVendas(pai->dir);
+    }
+    if (pai->esq != NULL) {
+        S += SomaVendas(pai->esq);
+    }
+    return S; // retorna valor total
+}
+
 
 #endif // ARVORE_H_INCLUDED
