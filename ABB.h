@@ -21,6 +21,7 @@ typedef struct Data {
     int ano;
 } Data;
 
+
 typedef struct Venda {
     int id;                    // Chave primária (1000-9999)
     char cliente[51];          // Nome do cliente
@@ -53,7 +54,8 @@ void LiberarArvore(Arv *A);
 
 // Funções de impressão
 void ImprimirArvore(Arv *A, int procedimento);
-void ImprimirVenda(Venda v);                    
+void ImprimirVenda(Venda v);     
+void imprimirVendaDeVendedor(Venda v);               
 void auxPreOrder(NoArv *no);
 void auxInOrder(NoArv *no);
 void auxPosOrder(NoArv *no);
@@ -64,7 +66,12 @@ NoArv* auxBuscar(NoArv* no, int id);
 NoArv* auxInserir(NoArv* no, Venda v, int* sucesso);
 NoArv* auxRemover(NoArv* no, int id, int* removido);
 NoArv* EncontrarMinimo(NoArv* no);
+NoArv* EncontrarMaximo(NoArv* no);
 void auxLiberar(NoArv* no);
+int QuantidadeVendas(NoArv* pai);
+float SomaVendas (NoArv* pai);
+int BuscarVendasPorNome(NoArv* no, char vendedor[51]);
+int BuscarVendasPorMatricula(NoArv* no, char matricula[5]);
 
 // ========== IMPLEMENTAÇÕES ==========
 
@@ -93,12 +100,17 @@ NoArv* CriaNo(Venda v) {
     return novo;
 }
 
-// 4. IMPRIMIR VENDA
+// 4.1 IMPRIMIR VENDA
 void ImprimirVenda(Venda v) {                  
-    printf("ID: %d | Cliente: %s | Vendedor: %s | Matrícula: %s\n", 
-           v.id, v.cliente, v.vendedor, v.matricula);
-    printf("Data: %02d/%02d/%04d | Valor: R$ %.2f\n", 
-           v.dataTransacao.dia, v.dataTransacao.mes, v.dataTransacao.ano, v.valorTransacao);
+    printf("ID: %-5d | Vendedor: %-20s | Matrícula: %s | Cliente: %s | Data: %02d/%02d/%04d | Valor: R$ %.2f\n", 
+           v.id, v.vendedor, v.matricula, v.cliente, v.dataTransacao.dia, v.dataTransacao.mes, v.dataTransacao.ano, v.valorTransacao);
+    printf("----------------------------------------\n");
+}
+
+// 4.2 IMPRIMIR VENDA DE DETERMINADO VENDEDOR
+void imprimirVendaDeVendedor(Venda v) {
+    printf("ID: %-5d | Cliente: %-20s | Data: %02d/%02d/%04d | Valor: R$ %.2f\n", 
+           v.id, v.cliente, v.dataTransacao.dia, v.dataTransacao.mes, v.dataTransacao.ano,  v.valorTransacao);
     printf("----------------------------------------\n");
 }
 
@@ -188,6 +200,23 @@ NoArv* auxBuscar(NoArv* no, int id) {
     }
 }
 
+// buscar venda por nome ou matricula
+int BuscarVendasPorNome(NoArv* no, char vendedor[51]) {
+    if (no == NULL) return 0;
+    
+    int count = (strcmp(no->venda.vendedor, vendedor) == 0) ? 1 : 0;
+    return count + BuscarVendasPorNome(no->esq, vendedor) + 
+                   BuscarVendasPorNome(no->dir, vendedor);
+}
+
+int BuscarVendasPorMatricula(NoArv* no, char matricula[5]) {
+    if (no == NULL) return 0;
+    
+    int count = (strcmp(no->venda.matricula, matricula) == 0) ? 1 : 0;
+    return count + BuscarVendasPorMatricula(no->esq, matricula) + 
+                   BuscarVendasPorMatricula(no->dir, matricula);
+}
+
 // 8. INSERIR
 int InserirVenda(Arv *A, Venda venda) {       
     if (A == NULL) {
@@ -230,17 +259,25 @@ int RemoverVenda(Arv *A, int id) {
 }
 
 // Auxiliar - Encontrar mínimo
-NoArv* EncontrarMinimo(NoArv* no) {            
-    while (no && no->esq != NULL) {
-        no = no->esq;
+// NoArv* EncontrarMinimo(NoArv* no) {            
+//     while (no && no->esq != NULL) {
+//         no = no->esq;
+//     }
+//     return no;
+// }
+
+NoArv* EncontrarMaximo(NoArv* no) {
+    while (no->dir != NULL) {
+        no = no->dir;
     }
     return no;
 }
 
+
 // Auxiliar - Remoção recursiva
-NoArv* auxRemover(NoArv* no, int id, int* removido) {
+NoArv* auxRemover(NoArv* no, int id, int* removido) { //obs remove apenas o id 
     if (no == NULL) {
-        *removido = 0;
+        *removido = 0; //caso arvore vazia
         return no;
     }
     
@@ -264,14 +301,13 @@ NoArv* auxRemover(NoArv* no, int id, int* removido) {
         }
         
         // Caso 2: Nó com dois filhos
-        NoArv* temp = EncontrarMinimo(no->dir);
+        NoArv* temp = EncontrarMaximo(no->esq); //maior valor da subárvore esquerda
         no->venda = temp->venda;
-        no->dir = auxRemover(no->dir, temp->venda.id, removido);
+        no->esq = auxRemover(no->esq, temp->venda.id, removido);
     }
     
     return no;
 }
-
 // 10. LIBERAR ÁRVORE
 void LiberarArvore(Arv *A) {
     if (A != NULL) {
