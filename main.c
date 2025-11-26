@@ -209,8 +209,8 @@ int GerarID(){
 // == Verificar se ID ja existe ==
 
 int IDExiste(Arv *arv, int id){
-    NoArv* resultado = BuscarVenda(arv, id);
-    return (resultado != NULL);
+    int resultado = BuscarVenda(arv, id);
+    return resultado;
 }
 
 // == Gera ID único ==

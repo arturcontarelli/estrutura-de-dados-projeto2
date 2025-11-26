@@ -48,7 +48,7 @@ Arv* CriaArvore();
 int VaziaArvore(Arv *A);
 NoArv* CriaNo(Venda v);
 int InserirVenda(Arv *A, Venda v);
-NoArv* BuscarVenda(Arv *A, int id);
+int BuscarVenda(Arv *A, int id);
 int RemoverVenda(Arv *A, int id);
 void LiberarArvore(Arv *A);
 
@@ -62,8 +62,7 @@ void auxPosOrder(NoArv *no);
 void auxInOrderDecrescente(NoArv *no);
 
 // Funções auxiliares
-NoArv* auxBuscar(NoArv* no, int id);
-NoArv* auxInserir(NoArv* no, Venda v, int* sucesso);
+int auxBuscar(NoArv* no, int id);
 NoArv* auxRemover(NoArv* no, int id, int* removido);
 NoArv* EncontrarMinimo(NoArv* no);
 NoArv* EncontrarMaximo(NoArv* no);
@@ -75,18 +74,19 @@ int BuscarVendasPorMatricula(NoArv* no, char matricula[5]);
 
 // ========== IMPLEMENTAÇÕES ==========
 
-// 1. CRIAR ÁRVORE
+// 1. CRIAR ÁRVORE -> igual em aula
 Arv* CriaArvore() {
     Arv* a = (Arv*) malloc(sizeof(Arv));
-    if (a != NULL) {
-        a->raiz = NULL;                        
-    }
+    a->raiz = NULL; 
     return a;
 }
 
 // 2. VERIFICA SE A ÁRVORE ESTÁ VAZIA
 int VaziaArvore(Arv *A) {
-    return (A == NULL || A->raiz == NULL);     
+    if (A->raiz == NULL) {
+        return 1; //se raiz for NULL nao tem elemento
+    } 
+    return 0;
 }
 
 // 3. CRIAR NÓ
@@ -115,47 +115,36 @@ void imprimirVendaDeVendedor(Venda v) {
 }
 
 // 5. FUNÇÕES DE IMPRESSÃO AUXILIAR
-void auxPreOrder(NoArv *no) {
-    if (no != NULL) {
-        ImprimirVenda(no->venda);
-        auxPreOrder(no->esq);
-        auxPreOrder(no->dir);
-    }
+void auxPreOrder(NoArv *pai) {
+    ImprimirVenda(pai->venda);
+    if (pai->dir != NULL) { auxPreOrder(pai->dir); }
+    if (pai->esq != NULL) { auxPreOrder(pai->esq); }
 }
 
-void auxInOrder(NoArv *no) {
-    if (no != NULL) {
-        auxInOrder(no->esq);
-        ImprimirVenda(no->venda);
-        auxInOrder(no->dir);
-    }
+void auxInOrder(NoArv *pai) {
+    if (pai->dir != NULL) { auxPreOrder(pai->dir); }
+    ImprimirVenda(pai->venda);
+    if (pai->esq != NULL) { auxPreOrder(pai->esq); }
 }
 
-void auxPosOrder(NoArv *no) {
-    if (no != NULL) {
-        auxPosOrder(no->esq);
-        auxPosOrder(no->dir);
-        ImprimirVenda(no->venda);
-    }
+void auxPosOrder(NoArv *pai) {
+    if (pai->dir != NULL) { auxPreOrder(pai->dir); }
+    if (pai->esq != NULL) { auxPreOrder(pai->esq); }
+    ImprimirVenda(pai->venda);
 }
 
-void auxInOrderDecrescente(NoArv *no) {
-    if (no != NULL) {
-        auxInOrderDecrescente(no->dir);
-        ImprimirVenda(no->venda);
-        auxInOrderDecrescente(no->esq);
-    }
+void auxInOrderDecrescente(NoArv *pai) {
+    if (pai->esq != NULL) { auxInOrderDecrescente(pai->esq); } 
+    ImprimirVenda(pai->venda);
+    if (pai->dir != NULL) { auxInOrderDecrescente(pai->dir); }
 }
 
 // 6. IMPRIMIR ÁRVORE
 void ImprimirArvore(Arv *A, int procedimento){
-    // CORREÇÃO: Verificar se árvore está vazia primeiro
     if (VaziaArvore(A)) {
         printf("Arvore vazia.\n");
-        return;
-    }
-
-    switch(procedimento){
+    } else {
+        switch(procedimento) {
         case 1:
             printf("Impressão Pre-Ordem:\n");
             auxPreOrder(A->raiz);              
@@ -174,30 +163,40 @@ void ImprimirArvore(Arv *A, int procedimento){
             break;
         default:
             printf("Procedimento inválido. Use: 1=Pre-ordem, 2=Em ordem, 3=Pos-ordem\n");
-            return;
     }
+    }
+
+    
     printf("===========================\n\n");
 }
 
 // 7. BUSCAR UM ELEMENTO NA ÁRVORE POR VALOR (ID)
-NoArv* BuscarVenda(Arv *A, int id) {           
+int BuscarVenda(Arv *A, int id) {           
     if (VaziaArvore(A)) {
-        return NULL;
+        return 0;
     }
     return auxBuscar(A->raiz, id);             
 }
 
 // Auxiliar - Busca recursiva
-NoArv* auxBuscar(NoArv* no, int id) {
-    if (no == NULL || no->venda.id == id) {
-        return no;
+int auxBuscar(NoArv* pai, int id) {
+    if (pai->venda.id == id) {
+        return 1; // 1 se achou
     }
     
-    if (id < no->venda.id) {
-        return auxBuscar(no->esq, id);
-    } else {
-        return auxBuscar(no->dir, id);
+    if (id < pai->venda.id) {
+        if (pai->esq != NULL) {
+            return auxBuscar(pai->esq, id);
+        }
+        return 0; // se n tiver ja sai
     }
+    if (id > pai->venda.id) {
+        if (pai->dir != NULL) {
+            return auxBuscar(pai->esq, id);
+        }
+        return 0; // se n tiver ja sai
+    }
+    
 }
 
 // buscar venda por nome ou matricula
@@ -205,46 +204,48 @@ int BuscarVendasPorNome(NoArv* no, char vendedor[51]) {
     if (no == NULL) return 0;
     
     int count = (strcmp(no->venda.vendedor, vendedor) == 0) ? 1 : 0;
-    return count + BuscarVendasPorNome(no->esq, vendedor) + 
-                   BuscarVendasPorNome(no->dir, vendedor);
+    return count + BuscarVendasPorNome(no->dir, vendedor) + 
+                   BuscarVendasPorNome(no->esq, vendedor);
 }
 
 int BuscarVendasPorMatricula(NoArv* no, char matricula[5]) {
     if (no == NULL) return 0;
     
     int count = (strcmp(no->venda.matricula, matricula) == 0) ? 1 : 0;
-    return count + BuscarVendasPorMatricula(no->esq, matricula) + 
-                   BuscarVendasPorMatricula(no->dir, matricula);
+    return count + BuscarVendasPorMatricula(no->dir, matricula) + 
+                   BuscarVendasPorMatricula(no->esq, matricula);
 }
 
 // 8. INSERIR
-int InserirVenda(Arv *A, Venda venda) {       
-    if (A == NULL) {
-        return 0; // Falha: árvore não inicializada
-    }
-    
-    int sucesso = 0;
-    A->raiz = auxInserir(A->raiz, venda, &sucesso);  
-    return sucesso;
-}
-
-// Auxiliar - Inserção recursiva
-NoArv* auxInserir(NoArv* no, Venda v, int* sucesso) {
-    if (no == NULL) {
-        *sucesso = 1;
-        return CriaNo(v);
-    }
-    
-    if (v.id < no->venda.id) {
-        no->esq = auxInserir(no->esq, v, sucesso);
-    } else if (v.id > no->venda.id) {
-        no->dir = auxInserir(no->dir, v, sucesso);
+int InserirVenda(Arv *A, Venda venda) {
+    // Aloca espaço e inicializa
+    NoArv* novo = CriaNo(venda);
+    // Se a raiz da árvore está vazia, novo é a raiz
+    if (VaziaArvore(A)) {
+        A->raiz = novo;
+        return 1;
     } else {
-        // ID já existe
-        *sucesso = 0;
+        // Cria um pai para não perder a raiz 
+        NoArv* Pai = A->raiz;
+        while (1) {
+            if (venda.id > Pai->venda.id) {
+                if (Pai->dir != NULL) {
+                    Pai = Pai->dir;
+                } else {
+                    Pai->dir = novo;
+                    return 1;
+                }
+            } else {
+                if (Pai->esq != NULL) {
+                    Pai = Pai->esq;
+                } else {
+                    Pai->esq = novo;
+                    return 1;
+                }
+            }
+        }
     }
-    
-    return no;
+    return 0;
 }
 
 // 9. REMOVER
@@ -310,19 +311,17 @@ NoArv* auxRemover(NoArv* no, int id, int* removido) { //obs remove apenas o id
 }
 // 10. LIBERAR ÁRVORE
 void LiberarArvore(Arv *A) {
-    if (A != NULL) {
-        auxLiberar(A->raiz);                   
+    if (!VaziaArvore(A)) {
+        auxLiberar(A->raiz);
         free(A);
     }
 }
 
 // Auxiliar - Liberar memória recursivamente
-void auxLiberar(NoArv* no) {                  
-    if (no != NULL) {
-        auxLiberar(no->esq);
-        auxLiberar(no->dir);
-        free(no);
-    }
+void auxLiberar(NoArv* no) {
+    if(no -> esq != NULL) auxLiberar(no->esq);
+    if(no -> dir != NULL) auxLiberar(no->dir);
+    free(no);
 }
 
 int QuantidadeVendas(NoArv* pai) {
