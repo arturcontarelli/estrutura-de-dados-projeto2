@@ -17,21 +17,19 @@ void ExibirEstatisticas(Arv *arv);
 int GerarID();
 int IDExiste(Arv *arv, int id);
 int GerarIDUnico(Arv *arv);
-int SelecionarImpressao();
 void auxPrintVendasMaior(NoArv *no, float valorBusca);
 void auxPrintVendasMenor(NoArv *no, float valorBusca);
-// Prototipos para matricula
+
 void GerarMatricula(char matricula[5]);
 void GerarMatriculaUnica(Arv *arv, char matricula[5]);
 int MatriculaExiste(Arv *arv, char matricula[5]);
 int auxVerificarMatricula(NoArv* no, char matricula[5]);
 
-// Prototipos para vendedores
 int ProcessarVendedorExistente(Arv *arv, char matricula[5], char nomeVendedor[51]);
 int ProcessarNovoVendedor(Arv *arv, char matricula[5], char nomeVendedor[51]);
 Venda CriarVenda(char matricula[5], char nomeVendedor[51], Arv *arv);
-void BuscarDadosVendedorPorMatricula(Arv *arv, char matricula[5], char nomeEncontrado[51]);
-void auxBuscarDadosVendedor(NoArv* no, char matricula[5], char nomeEncontrado[51], int* encontrou);
+int BuscarDadosVendedorPorMatricula(Arv *arv, char matricula[5], char nomeEncontrado[51]);
+int auxBuscarDadosVendedor(NoArv* no, char matricula[5], char nomeEncontrado[51]);
 
 
 // === Funcão main ===
@@ -53,153 +51,181 @@ void menu() {
 
     if (arvore == NULL) {
         printf("ERRO: Falha ao inicializar o sistema!\n");
-    } else{
-        do {
-
-            system("cls");
-            printf("\n =============================================\n");
-            printf("||           SISTEMA DE VENDAS               || \n");
-            printf(" =============================================\n");
-            printf(" > 1.  Inserir nova venda \n");
-            printf(" > 2.  Listar todas as vendas \n");
-            printf(" > 3.  Buscar vendas de um vendedor \n");
-            printf(" > 4.  Filtrar vendas por valor \n");
-            printf(" > 5.  Exibir estatisticas \n");
-            printf(" > 6.  Remover uma venda \n");
-            printf(" > 7.  Finalizar sistema \n");
-            printf("=============================================\n");
-            printf("--- Selecione uma opcao (1-7): ---\n");
-
-            // Validacão de entrada
-            entradaValida = scanf("%d", &opcao);
-
-            // Limpar buffer em caso de entrada invalida
-            while (getchar() != '\n');
-
-            if (!entradaValida) {
-                printf("\n ERRO: Digite apenas numeros!\n");
-                printf(" Pressione ENTER para continuar...");
-                getchar();
-            }
-
-            printf("\n");
-
-            switch (opcao) {
-                case 1: {
-                    system("cls");
-                    InserirNovaVenda(arvore);
-                    break;
-                }
-
-                case 2: {
-                    system("cls");
-                    if (VaziaArvore(arvore)) {
-                        printf(" Nenhuma venda cadastrada ainda.\n");
-                    } else {
-
-                        ListarVendas(arvore);
-                    }
-                    break;
-                }
-
-                case 3: {
-                    system("cls");
-                    if (VaziaArvore(arvore)) {
-                        printf(" Nenhuma venda cadastrada para buscar.\n");
-                    } else {
-
-                        BuscarVendedor(arvore);
-                    }
-                    break;
-                }
-
-                case 4: {
-                    system("cls");
-                    if (VaziaArvore(arvore)) {
-                        printf(" Nenhuma venda cadastrada para filtrar.\n");
-                    } else {
-                        float valor;
-                        int tipoFiltro;
-
-                        printf(" === FILTRAR VENDAS POR VALOR ===\n");
-                        printf("Digite o valor de referência: R$ ");
-
-                        if (scanf("%f", &valor) != 1 || valor < 0) {
-                            while (getchar() != '\n'); // Limpar buffer
-                            printf(" Valor invalido! Use numeros positivos.\n");
-                            break;
-                        }
-
-                        printf("\nTipo de filtro:\n");
-                        printf("1 - Vendas ACIMA de R$ %.2f\n", valor);
-                        printf("2 - Vendas ABAIXO de R$ %.2f\n", valor);
-                        printf("Escolha (1 ou 2): ");
-                        scanf("%d", &tipoFiltro);
-
-                        if (tipoFiltro != 1 && tipoFiltro != 2) {
-                            while (getchar() != '\n');
-                            printf(" Opcao invalida! Escolha 1 ou 2.\n");
-                            break;
-                        }
-
-                        printf("\n Buscando vendas...\n");
-                        ListarVendaPorValor(arvore, valor, tipoFiltro);
-                    }
-                    break;
-                }
-
-                case 5: {
-                    system("cls");
-                    if (VaziaArvore(arvore)) {
-                        printf(" Nenhuma venda cadastrada para gerar estatisticas.\n");
-                    } else {
-                        printf(" Calculando estatisticas...\n");
-                        ExibirEstatisticas(arvore);
-                    }
-                    break;
-                }
-
-                case 6: {
-                    system("cls");
-                    if (VaziaArvore(arvore)) {
-                        printf(" Nenhuma venda cadastrada para remover.\n");
-                    } else {
-                        printf(" Carregando remocao de venda...\n");
-                        //RemoverVenda(arvore);
-                    }
-                    break;
-                }
-
-                case 7: {
-                    system("cls");
-                    printf(" Finalizando sistema...\n");
-
-                    LiberarArvore(arvore);
-                    break;
-                }
-
-                default: {
-                    system("cls");
-                    printf(" OPCAO INVALIDA!\n");
-                    printf(" Escolha um numero entre 1 e 7.\n");
-                    break;
-                }
-            }
-
-            // Pausa para o usuario ler as mensagens (exceto na saida)
-            if (opcao != 7) {
-                printf("\n Pressione ENTER para voltar ao menu...");
-                getchar();
-            }
-
-        } while (opcao != 7);
+        return;
     }
+    do {
+
+        system("cls");
+        printf("\n =============================================\n");
+        printf("||           SISTEMA DE VENDAS               || \n");
+        printf(" =============================================\n");
+        printf(" > 1.  Inserir nova venda \n");
+        printf(" > 2.  Listar todas as vendas \n");
+        printf(" > 3.  Buscar vendas de um vendedor \n");
+        printf(" > 4.  Filtrar vendas por valor \n");
+        printf(" > 5.  Exibir estatisticas \n");
+        printf(" > 6.  Remover uma venda \n");
+        printf(" > 7.  Finalizar sistema \n");
+        printf("=============================================\n");
+        printf("--- Selecione uma opcao (1-7): ---\n");
+
+        // Validacão de entrada
+        entradaValida = scanf("%d", &opcao);
+
+        // Limpar buffer em caso de entrada invalida
+        while (getchar() != '\n');
+
+        if (!entradaValida) {
+            printf("\n ERRO: Digite apenas numeros!\n");
+            printf(" Pressione ENTER para continuar...");
+            getchar();
+        }
+
+        printf("\n");
+
+        switch (opcao) {
+            case 1: {
+                system("cls");
+                InserirNovaVenda(arvore);
+                break;
+            }
+
+            case 2: {
+                system("cls");
+                if (VaziaArvore(arvore)) {
+                    printf(" Nenhuma venda cadastrada ainda.\n");
+                } else {
+
+                    ListarVendas(arvore);
+                }
+                break;
+            }
+
+            case 3: {
+                system("cls");
+                if (VaziaArvore(arvore)) {
+                    printf(" Nenhuma venda cadastrada para buscar.\n");
+                } else {
+
+                    BuscarVendedor(arvore);
+                }
+                break;
+            }
+
+            case 4: {
+                system("cls");
+                if (VaziaArvore(arvore)) {
+                    printf(" Nenhuma venda cadastrada para filtrar.\n");
+                } else {
+                    float valor;
+                    int tipoFiltro;
+
+                    printf(" === FILTRAR VENDAS POR VALOR ===\n");
+                    printf("Digite o valor de referência: R$ ");
+
+                    if (scanf("%f", &valor) != 1 || valor < 0) {
+                        while (getchar() != '\n'); // Limpar buffer
+                        printf(" Valor invalido! Use numeros positivos.\n");
+                        break;
+                    }
+
+                    printf("\nTipo de filtro:\n");
+                    printf("1 - Vendas ACIMA de R$ %.2f\n", valor);
+                    printf("2 - Vendas ABAIXO de R$ %.2f\n", valor);
+                    printf("Escolha (1 ou 2): ");
+                    scanf("%d", &tipoFiltro);
+
+                    if (tipoFiltro != 1 && tipoFiltro != 2) {
+                        while (getchar() != '\n');
+                        printf(" Opcao invalida! Escolha 1 ou 2.\n");
+                        break;
+                    }
+
+                    printf("\n Buscando vendas...\n");
+                    ListarVendaPorValor(arvore, valor, tipoFiltro);
+                }
+                break;
+            }
+
+            case 5: {
+                system("cls");
+                if (VaziaArvore(arvore)) {
+                    printf(" Nenhuma venda cadastrada para gerar estatisticas.\n");
+                } else {
+                    printf(" Calculando estatisticas...\n");
+                    ExibirEstatisticas(arvore);
+                }
+                break;
+            }
+
+            case 6: {
+                system("cls");
+                if (VaziaArvore(arvore)) {
+                    printf(" Nenhuma venda cadastrada para remover.\n");
+                } else {
+                    printf(" Carregando remocao de venda...\n");
+                    //RemoverVenda(arvore);
+                }
+                break;
+            }
+
+            case 7: {
+                system("cls");
+                printf(" Finalizando sistema...\n");
+
+                LiberarArvore(arvore);
+                break;
+            }
+
+            default: {
+                system("cls");
+                printf(" OPCAO INVALIDA!\n");
+                printf(" Escolha um numero entre 1 e 7.\n");
+                break;
+            }
+        }
+
+        // Pausa para o usuario ler as mensagens (exceto na saida)
+        if (opcao != 7) {
+            system("pause");
+        }
+
+    } while (opcao != 7);
 }
 
 
 // === Funcões Auxiliares ===
 
 
+
+Venda CriarVenda(char matricula[5], char nomeVendedor[51], Arv *arv) {
+    Venda novaVenda;
+
+    // Gerar ID único
+    novaVenda.id = GerarIDUnico(arv);
+
+    // Copiar dados do vendedor
+    strcpy(novaVenda.vendedor, nomeVendedor);
+    strcpy(novaVenda.matricula, matricula);
+
+    // Coletar dados do cliente
+    printf("\n--- DADOS DA VENDA ---\n");
+    printf("Nome do cliente: ");
+    getchar(); // Limpar buffer
+    fgets(novaVenda.cliente, 51, stdin);
+    novaVenda.cliente[strcspn(novaVenda.cliente, "\n")] = 0;
+
+    // Coletar data
+    printf("Data da transacão (DD MM AAAA): ");
+    scanf("%d %d %d", &novaVenda.dataTransacao.dia,
+          &novaVenda.dataTransacao.mes, &novaVenda.dataTransacao.ano);
+
+    // Coletar valor
+    printf("Valor da transacão: R$ ");
+    scanf("%f", &novaVenda.valorTransacao);
+
+    return novaVenda;
+}
 
 // == gerar ID aleatorio ==
 
@@ -209,8 +235,8 @@ int GerarID(){
 // == Verificar se ID ja existe ==
 
 int IDExiste(Arv *arv, int id){
-    NoArv* resultado = BuscarVenda(arv, id);
-    return (resultado != NULL);
+    int resultado = BuscarVenda(arv, id);
+    return resultado;
 }
 
 // == Gera ID único ==
@@ -243,7 +269,6 @@ void GerarMatricula(char matricula[5]) {
 
     // Resultado: "V456"
 }
-
 
 // == Verificar se matricula ja existe ==
 int MatriculaExiste(Arv *arv, char matricula[5]) {
@@ -291,27 +316,7 @@ void GerarMatriculaUnica(Arv *arv, char matricula[5]) {
     } while (continuar && MatriculaExiste(arv, matricula));
 }
 
-// == Selecionar tipo de impressão, crescente ou decrescente ==
-int SelecionarImpressao(){
-    int escolha;
-    printf("Selecione o tipo de impressao \n 1 - Crescente \n 2 - Decrescente\n");
-    scanf("%d", &escolha);
-    switch(escolha){
-        case 1:
-            return 1; // Crescente
-        case 2:
-            return 2; // Decrescente
-        default:
-            printf("Escolha invalida. Selecionando crescente por padrao.\n");
-            return 1;
-    }
-
-}
-
-
-
 // === Funcionalidades do sistema ===
-
 // 1. Inserir nova venda na arvore
 void InserirNovaVenda(Arv *arv) {
     char matricula[5];
@@ -324,11 +329,14 @@ void InserirNovaVenda(Arv *arv) {
     scanf("%d", &opcaoVendedor);
 
     // Processar vendedor
-    int vendedorOK = (opcaoVendedor == 1) ?
-        ProcessarVendedorExistente(arv, matricula, nomeVendedor) :
-        ProcessarNovoVendedor(arv, matricula, nomeVendedor);
+    int vendedorOK;
+    if(opcaoVendedor == 1){
+        vendedorOK = ProcessarVendedorExistente(arv, matricula, nomeVendedor);
+    } else{
+        vendedorOK = ProcessarNovoVendedor(arv, matricula, nomeVendedor);
+    }
 
-    if (!vendedorOK) {
+    if(!vendedorOK) {
         printf("Operacao cancelada.\n");
     }
     else {
@@ -363,28 +371,32 @@ int ProcessarVendedorExistente(Arv *arv, char matricula[5], char nomeVendedor[51
     }
 
     // Buscar dados do vendedor
-    BuscarDadosVendedorPorMatricula(arv, matricula, nomeExistente);
+    int vendedorExiste = BuscarDadosVendedorPorMatricula(arv, matricula, nomeExistente);
 
-    printf("Vendedor encontrado: %s\n", nomeExistente);
-    printf("Confirma este vendedor?\n");
-    printf("1 - Sim, continuar\n");
-    printf("2 - Não, cancelar\n");
-    printf("Escolha: ");
-    scanf("%d", &confirma);
+    if(vendedorExiste){
+        printf("Vendedor encontrado: %s\n", nomeExistente);
+        printf("Confirma este vendedor?\n");
+        printf("1 - Sim, continuar\n");
+        printf("2 - Não, cancelar\n");
+        printf("Escolha: ");
+        scanf("%d", &confirma);
 
-    switch(confirma) {
-        case 1:
-            strcpy(nomeVendedor, nomeExistente);
-            printf("Vendedor confirmado: %s (%s)\n", nomeVendedor, matricula);
-            return 1;
+        switch(confirma) {
+            case 1:
+                strcpy(nomeVendedor, nomeExistente);
+                printf("Vendedor confirmado: %s (%s)\n", nomeVendedor, matricula);
+                return 1;
 
-        case 2:
-            printf("Operacao cancelada pelo usuario.\n");
-            return 0;
+            case 2:
+                printf("Operacao cancelada pelo usuario.\n");
+                return 0;
 
-        default:
-            printf("Opcao invalida. Operacao cancelada.\n");
-            return 0;
+            default:
+                printf("Opcao invalida. Operacao cancelada.\n");
+                return 0;
+        }
+    } else{
+        return 0;
     }
 }
 
@@ -420,58 +432,34 @@ int ProcessarNovoVendedor(Arv *arv, char matricula[5], char nomeVendedor[51]) {
     return 1;
 }
 
-Venda CriarVenda(char matricula[5], char nomeVendedor[51], Arv *arv) {
-    Venda novaVenda;
-
-    // Gerar ID único
-    novaVenda.id = GerarIDUnico(arv);
-
-    // Copiar dados do vendedor
-    strcpy(novaVenda.vendedor, nomeVendedor);
-    strcpy(novaVenda.matricula, matricula);
-
-    // Coletar dados do cliente
-    printf("\n--- DADOS DA VENDA ---\n");
-    printf("Nome do cliente: ");
-    getchar(); // Limpar buffer
-    fgets(novaVenda.cliente, 51, stdin);
-    novaVenda.cliente[strcspn(novaVenda.cliente, "\n")] = 0;
-
-    // Coletar data
-    printf("Data da transacão (DD MM AAAA): ");
-    scanf("%d %d %d", &novaVenda.dataTransacao.dia,
-          &novaVenda.dataTransacao.mes, &novaVenda.dataTransacao.ano);
-
-    // Coletar valor
-    printf("Valor da transacão: R$ ");
-    scanf("%f", &novaVenda.valorTransacao);
-
-    return novaVenda;
-}
-
 // 1.3 Buscar dados do vendedor por matricula
-void BuscarDadosVendedorPorMatricula(Arv *arv, char matricula[5], char nomeEncontrado[51]) {
+int BuscarDadosVendedorPorMatricula(Arv *arv, char matricula[5], char nomeEncontrado[51]) {
     strcpy(nomeEncontrado, ""); // Inicializar vazio
 
     if (!VaziaArvore(arv)) { // Pegar o nome referente a matricula
-        int encontrou = 0;
-        auxBuscarDadosVendedor(arv->raiz, matricula, nomeEncontrado, &encontrou);
+        int encontrou = auxBuscarDadosVendedor(arv->raiz, matricula, nomeEncontrado);
+    } else{
+        return 0;
     }
 }
 
 // 1.4 Auxiliar recursivo para buscar dados do vendedor
-void auxBuscarDadosVendedor(NoArv* no, char matricula[5], char nomeEncontrado[51], int* encontrou) {
-    if (no != NULL && !(*encontrou)) {
-        if (strcmp(no->venda.matricula, matricula) == 0) {
-            strcpy(nomeEncontrado, no->venda.vendedor);
-            *encontrou = 1;
-        } else{
-
-            // Continuar busca recursivamente
-            auxBuscarDadosVendedor(no->esq, matricula, nomeEncontrado, encontrou);
-            auxBuscarDadosVendedor(no->dir, matricula, nomeEncontrado, encontrou);
+int auxBuscarDadosVendedor(NoArv* no, char matricula[5], char nomeEncontrado[51]) {
+    int encontrou = 0;
+    if (strcmp(no->venda.matricula, matricula) == 0) {
+        strcpy(nomeEncontrado, no->venda.vendedor);
+        encontrou = 1;
+            return encontrou;
         }
+
+    // Continuar busca recursivamente
+    if(no->esq != NULL){
+        encontrou = auxBuscarDadosVendedor(no->esq, matricula, nomeEncontrado);
     }
+    if(no->dir != NULL && encontrou == 0){
+        encontrou = auxBuscarDadosVendedor(no->dir, matricula, nomeEncontrado);
+    }
+    return encontrou;
 }
 
 
@@ -479,16 +467,20 @@ void auxBuscarDadosVendedor(NoArv* no, char matricula[5], char nomeEncontrado[51
 // no formato ID | Vendedor | Matricula |Cliente | Data de Transacão| Valor(R$)
 
 void ListarVendas(Arv *arv){
-    int ordem = SelecionarImpressao();
-    switch(ordem){
+    int escolha;
+    printf("Selecione o tipo de impressao \n 1 - Decrescente \n 2 - Crescente\n");
+    fflush(stdin);
+    scanf("%d", &escolha);
+    switch(escolha){
         case 1:
-            ImprimirArvore(arv, 2); // Em ordem crescente
-            break;
+                ImprimirArvore(arv, 2); // Em ordem Decrescente
+                break;
         case 2:
-            ImprimirArvore(arv, 4); // Em ordem decrescente
-            break;
+                ImprimirArvore(arv, 4); // Em ordem Crescente
+                break;
         default:
-            printf("Ordem invalida.\n");
+            printf("Escolha invalida. Selecionando crescente por padrao.\n");
+            ImprimirArvore(arv, 4); // Em ordem Crescente
             break;
     }
 }
@@ -587,9 +579,11 @@ void ExibirEstatisticas(Arv *arv) {
             }
             default:
                 printf("Opcão invalida!\n");
-                break;
+                return;
         }
+
     }
+
     // se não digitar 's', apenas encerra
 }
 
