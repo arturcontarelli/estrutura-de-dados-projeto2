@@ -263,7 +263,12 @@ int auxVerificarMatricula(NoArv* no, char matricula[5]) {
         return 1;
     }
 
-    return auxVerificarMatricula(no->esq, matricula) || auxVerificarMatricula(no->dir, matricula);
+    if (no->esq != NULL) {
+        auxVerificarMatricula(no->esq, matricula);
+    }
+    if (no->dir != NULL) {
+        auxVerificarMatricula(no->dir, matricula);
+    }
 }
 
 void GerarMatriculaUnica(Arv *arv, char matricula[5]) {
